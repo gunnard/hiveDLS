@@ -16,8 +16,10 @@ if [ $# -gt 0 ];then
         $COMPOSE up 
     fi
     if [ "$1" == "ssh" ]; then
-        container=$(docker ps -q --filter="NAME=$2")
-        docker exec -ti $container bash
+        shift 1
+        #container=$(docker ps -q --filter="NAME=$2")
+        echo $1
+        docker exec -ti $1 bash
     fi
     if [ "$1" == "destroy" ]; then
         shift 1
