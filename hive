@@ -1,0 +1,90 @@
+
+#!/usr/bin/env bash
+
+TTY=""
+DOCKER_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd) #directory of this script. 
+UNAMESTR=`uname`
+if [ "$UNAMESTR" == 'Linux' ] || [ "$UNAMESTR" == 'Darwin' ]; then
+    COMPOSE="docker-compose"
+else
+    COMPOSE="winpty docker-compose -f docker-compose.yml"
+fi
+
+if [ $# -gt 0 ];then
+    if [ "$1" == "up" ]; then
+        shift 1				
+        $COMPOSE up -d
+    fi
+    if [ "$1" == "stop" ]; then
+        shift 1
+        docker stop $1
+    fi
+    if [ "$1" == "build" ]; then
+        shift 1
+        $COMPOSE build --parallel &&	$COMPOSE up -d
+    fi
+    if [ "$1" == "stop" ]; then
+		shift 1
+		docker stop $(docker ps -q)
+	fi
+    if [ "$1" == "ssh" ]; then
+        shift 1
+				docker exec -ti $1 bash
+    fi
+    if [ "$1" == "mysqlshell" ]; then
+        shift 1
+				docker exec  -it mysql-docker mysql -u root -h localhost -pmyrootpassword
+				docker exec  -it mysql-docker /bin/bash
+    fi
+
+    if [ "$1" == "purge" ]; then
+        shift 1
+        docker stop $(docker ps -a -q)
+        docker rm $(docker ps -a -q)
+        docker system prune -a -f
+    fi
+    if [ "$1" == "destroy" ]; then
+        shift 1
+        docker stop $(docker ps -a -q)
+        docker rm $(docker ps -a -q)
+        docker system prune -a -f
+        docker system prune -a -f --volumes
+    fi
+    else
+
+		clear
+		cat <<'EOF' 
+  ___ ___ .______   _______________
+ /   |   \|__\   \ /   /\_   _____/
+/    ~    \  |\   Y   /  |    __)_ 
+\    Y    /  | \     /   |        \
+ \___|_  /|__|  \___/   /_______  /
+       \/                       \/ 
+________    .____        _________ 
+\______ \   |    |      /   _____/ 
+ |    |  \  |    |      \_____  \  
+ |    `   \ |    |___   /        \ 
+/_______  / |_______ \ /_______  / 
+        \/          \/         \/  
+v1.82622
+----------------------------------------
+EOF
+	docker ps
+	printf "\n\n"
+	printf "usage:\n"
+	printf "./hive {option} \n\n"
+	printf "up          -- Brings up the dev environment\n"
+	printf "build       -- Builds and Brings up the dev environment\n"
+	printf "purge       -- Purges all docker containers and images. (Keeps database volumes)\n"
+	printf "stop        -- Stops all running docker containers\n"
+	printf "destroy     -- Destorys all docker containers and images\n"
+    printf "\n- Connect -----\n\n"
+	printf "mysqlshell  -- Connects to mysql container and mysql\n"
+	printf "ssh {name}  -- Connects to specified container by name\n"
+    printf "\n- Database ----\n\n"
+	printf "loaddb      -- Load .sql database file(s) into mysql-docker instance. ./dev loaddb [file.sql] [/path/to/files/*.sql] \n"
+    printf "\n- Utils ----\n\n"
+	printf "test        -- Run PHPUnit tests\n"
+	printf "gulp        -- Start Gulp {watch|stop} \n"
+	printf "\n"
+fi
