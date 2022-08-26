@@ -7,19 +7,21 @@ services:
       build: 
         context: .
         dockerfile: Dockerfile
-      container_name: php-app
+      container_name: app
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
       working_dir: /var/www/
       volumes:
         - ./public:/var/www
       networks:
-        - php-app-network
+        - hive-network
 
     # MySQL database service
     db:
       build:
         context: .
         dockerfile: MYSQLDockerfile
-      container_name: mysql-db
+      container_name: mysql
       extra_hosts:
         - "host.docker.internal:host-gateway"
       ports:
@@ -35,24 +37,24 @@ services:
       env_file:
         - ./.env
       networks:
-        - php-app-network
+        - hive-network
 
     # Nginx service
     nginx:
       build:
         context: .
         dockerfile: NGINXDockerfile
-      container_name: php-nginx
+      container_name: nginx
       ports:
         - 80:80
       volumes:
         - ./public:/var/www
         - ./nginx/conf.d/:/etc/nginx/conf.d/
       networks:
-        - php-app-network
+        - hive-network
 
 networks:
-    php-app-network:
+    hive-network:
         driver: bridge
 volumes:
   mysql-data:
