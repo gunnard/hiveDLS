@@ -66,7 +66,7 @@ ________    .____        _________
  |    `   \ |    |___   /        \ 
 /_______  / |_______ \ /_______  / 
         \/          \/         \/  
-v1.82622
+v1.103122
 ----------------------------------------
 EOF
 	docker ps
@@ -85,6 +85,5 @@ EOF
 	printf "loaddb      -- Load .sql database file(s) into mysql-docker instance. ./dev loaddb [file.sql] [/path/to/files/*.sql] \n"
     printf "\n- Utils ----\n\n"
 	printf "test        -- Run PHPUnit tests\n"
-	printf "gulp        -- Start Gulp {watch|stop} \n"
 	printf "\n"
 fi
